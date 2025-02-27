@@ -5,3 +5,17 @@ def call(String url,String branch){
 def trivy_fs(){
   sh "trivy fs . -o results.json"
 }
+
+def docker_push(String credId, String imageName){
+  withCredentials([usernamePassword(
+                    credentialsId:"${credId}",
+                    passwordVariable: "dockerHubPass",
+                    usernameVariable: "dockerHubUser"
+                )]){
+                
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                sh "docker image tag ${imageName} ${env.dockerHubUser}/${imageName}"
+                sh "docker push ${env.dockerHubUser}/${imageName}:latest"
+            
+                }  
+}
